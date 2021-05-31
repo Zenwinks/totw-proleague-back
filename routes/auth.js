@@ -10,9 +10,6 @@ const login = (request, response) => {
   pool.query('SELECT * FROM users WHERE name = $1', [name])
     .then(res => {
       if (res.rowCount > 0) {
-        console.log(password)
-        console.log(res.rows[0].password)
-        console.log(bcrypt.compareSync(password, res.rows[0].password))
         if (bcrypt.compareSync(password, res.rows[0].password)) {
           response.status(200).json({
             user: {
