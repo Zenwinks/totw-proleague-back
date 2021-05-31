@@ -1,16 +1,30 @@
-//Import
+//Imports
 const express = require('express')
 const app = express()
-const pool = require('./db')
 
 // Middleware
 app.use(express.json())
 
-app.get('/players', function (request, response) {
-  pool.query('SELECT * FROM public.players;')
-    .then(res => response.status(200).json(res.rows))
-    .catch(err => console.error(err))
-})
+// CORS middleware
+const allowCrossDomain = function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+}
+
+//Routes
+const auth = require('./routes/auth')
+const players = require('./routes/players')
+
+app.use(allowCrossDomain)
+
+//Appels Joueurs
+app.get('/players', players.getAllPlayers)
+
+//Appels Authentification
+app.post('/login', auth.login)
+app.post('/register', auth.register)
 
 app.listen(3000, () => {
   console.log("Serveur en écoute")
