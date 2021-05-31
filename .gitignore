@@ -1,0 +1,4 @@
+node_modules/
+db.js
+.DS_Store
+bdd.backup
