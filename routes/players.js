@@ -1,8 +1,10 @@
 const pool = require('.././db')
 
 const getAllPlayers = (request, response) => {
-  pool.query('SELECT * FROM players\n' +
-    'ORDER BY team ASC, name ASC;')
+  pool.query('SELECT p.id, p.name, t.name as team, c.name as country FROM players p\n' +
+    'inner join teams t on p.team_id = t.id\n' +
+    'inner join countries c on p.country_id = c.id\n' +
+    'ORDER BY t.name ASC, p.name ASC;')
     .then(res => response.status(200).json(res.rows))
     .catch(err => {
       console.error(err)
@@ -11,7 +13,7 @@ const getAllPlayers = (request, response) => {
 }
 
 const getAllPlayersWithPositions = (request, response) => {
-  pool.query('select DISTINCT pl.id, pl.name, array_to_string(array_agg(po.label),\',\') as positions, pl.team, pl.country, coalesce((\n' +
+  pool.query('select DISTINCT pl.id, pl.name, array_to_string(array_agg(po.label),\',\') as positions, te.name as team, c.name as country, coalesce((\n' +
     '\tSELECT COUNT(*) FROM totws t2 \n' +
     '\tINNER JOIN players pl2 on t2.player_id=pl2.id \n' +
     '\tWHERE t2."isTitu" = true AND t2.player_id = pl.id\n' +
@@ -34,7 +36,9 @@ const getAllPlayersWithPositions = (request, response) => {
     '),0) as nb_potw from players pl\n' +
     'inner join totws t on pl.id = t.player_id\n' +
     'inner join positions po on t.position_id = po.id\n' +
-    'group by pl.id order by pl.name ASC')
+    'inner join teams te on pl.team_id = te.id\n' +
+    'inner join countries c on pl.country_id = c.id\n' +
+    'group by pl.id, te.name, c.name order by te.name ASC')
     .then(res => {
       let players = res.rows.map(row => {
         let positionsTab = row.positions.split(',')
@@ -65,9 +69,12 @@ const create = (request, response) => {
   let name = formData.name
   let team = formData.team
   let country = formData.country
-  pool.query('INSERT INTO players(name, team, country) VALUES($1, $2, $3)', [name, team, country])
+  pool.query('INSERT INTO players(name, team_id, country_id) VALUES($1, $2, $3)', [name, team.id, country.id])
     .then(res => {
-      pool.query('select * from players')
+      pool.query('SELECT p.id, p.name, t.name as team, c.name as country FROM players p\n' +
+        'inner join teams t on p.team_id = t.id\n' +
+        'inner join countries c on p.country_id = c.id\n' +
+        'ORDER BY t.name ASC, p.name ASC;')
         .then(res2 => response.status(200).json(res2.rows))
         .catch(err => {
           console.error(err)
