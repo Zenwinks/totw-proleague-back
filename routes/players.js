@@ -12,6 +12,32 @@ const getAllPlayers = (request, response) => {
     })
 }
 
+const getPlayersByTotw = (request, response) => {
+  pool.query('SELECT p.id, p.name, t.name as team, c.name as country, tt."isTitu", tt."isPotw", po.label as position FROM players p\n' +
+    'inner join teams t on p.team_id = t.id\n' +
+    'inner join countries c on p.country_id = c.id\n' +
+    'inner join totws tt on p.id = tt.player_id\n' +
+    'inner join positions po on tt.position_id = po.id\n' +
+    'where tt.totw = $1\n' +
+    'ORDER BY t.name ASC, p.name ASC;', [request.params.totw])
+    .then(res => {
+      let titus = []
+      let subs = []
+      res.rows.forEach(player => {
+        if (player.isTitu) {
+          titus.push(player)
+        } else {
+          subs.push(player)
+        }
+      })
+      response.status(200).json({titus: titus, subs: subs})
+    })
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Récupération des joueurs en fonction de la TOTW impossible")
+    })
+}
+
 const getAllPlayersWithPositions = (request, response) => {
   pool.query('select DISTINCT pl.id, pl.name, array_to_string(array_agg(po.label),\',\') as positions, te.name as team, c.name as country, coalesce((\n' +
     '\tSELECT COUNT(*) FROM totws t2 \n' +
@@ -81,12 +107,17 @@ const create = (request, response) => {
           response.status(500).json("Récupération des joueurs impossible")
         })
     })
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Création du joueur impossible")
+    })
 }
 
 module.exports = {
   getAllPlayers,
   create,
-  getAllPlayersWithPositions
+  getAllPlayersWithPositions,
+  getPlayersByTotw
 }
 
 function foo (arr) {

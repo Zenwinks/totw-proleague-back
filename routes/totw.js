@@ -15,6 +15,33 @@ const getCount = (request, response) => {
     })
 }
 
+const getAllTotws = (request, response) => {
+  pool.query('SELECT DISTINCT totw FROM totws order by totw asc')
+    .then(res => {
+      pool.query('SELECT * FROM totwpics\n' +
+        'WHERE totw IN (SELECT DISTINCT totw FROM totws) order by totw asc')
+        .then(res2 => {
+          let totws = res.rows
+          res.rows.forEach((elem, index) => {
+            res2.rows.forEach(elem2 => {
+              if (elem.totw === elem2.totw) {
+                totws[index].pic = elem2.pic
+              }
+            })
+          })
+          response.status(200).json(totws)
+        })
+        .catch(err => {
+          console.error(err)
+          response.status(500).json("Récupération des previews de TOTW impossible")
+        })
+    })
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Récupération des TOTW impossible")
+    })
+}
+
 const create = (request, response) => {
   const formData = request.body
   let titus = formData.titus
@@ -46,5 +73,6 @@ const create = (request, response) => {
 
 module.exports = {
   getCount,
+  getAllTotws,
   create
 }

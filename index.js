@@ -27,11 +27,13 @@ app.use(allowCrossDomain)
 
 //Appels Joueurs
 app.get('/players', middleware, players.getAllPlayers)
+app.get('/players/:totw', middleware, players.getPlayersByTotw)
 app.get('/playersWithPositions', middleware, players.getAllPlayersWithPositions)
 app.post('/add-player', middleware, players.create)
 
 //Appels TOTW
 app.get('/totw-count', middleware, totw.getCount)
+app.get('/totws', middleware, totw.getAllTotws)
 app.post('/add-totw', middleware, totw.create)
 
 //Appels Formations
