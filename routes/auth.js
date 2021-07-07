@@ -15,7 +15,7 @@ const login = (request, response) => {
             user: {
               id: res.rows[0].id,
               name: res.rows[0].name,
-              isAdmin: res.rows[0].isAdmin
+              isAdmin: res.rows[0].isadmin
             },
             token: jwt.sign(
               {userId: res.rows[0].id},

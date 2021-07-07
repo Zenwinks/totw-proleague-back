@@ -27,23 +27,31 @@ app.use(allowCrossDomain)
 
 //Appels Joueurs
 app.get('/players', middleware, players.getAllPlayers)
+app.post('/players', middleware, players.createPlayer)
+app.patch('/players/:id', middleware, players.updatePlayer)
+app.delete('/players/:id', middleware, players.deletePlayer)
 app.get('/players/:totw', middleware, players.getPlayersByTotw)
 app.get('/playersWithPositions', middleware, players.getAllPlayersWithPositions)
-app.post('/add-player', middleware, players.create)
 
 //Appels TOTW
 app.get('/totw-count', middleware, totw.getCount)
 app.get('/totws', middleware, totw.getAllTotws)
-app.post('/add-totw', middleware, totw.create)
+app.post('/add-totw', middleware, totw.createTotw)
 
 //Appels Formations
 app.get('/formations', middleware, formations.getAllFormations)
 
 //Appels Teams
 app.get('/teams', middleware, teams.getAllTeams)
+app.post('/teams', middleware, teams.createTeam)
+app.patch('/teams/:id', middleware, teams.updateTeam)
+app.delete('/teams/:id', middleware, teams.deleteTeam)
 
 //Appels Teams
 app.get('/countries', middleware, countries.getAllCountries)
+app.post('/countries', middleware, countries.createCountry)
+app.patch('/countries/:id', middleware, countries.updateCountry)
+app.delete('/countries/:id', middleware, countries.deleteCountry)
 
 //Appels Positions
 app.get('/positions', middleware, positions.getAllPositions)

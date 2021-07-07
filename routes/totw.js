@@ -42,7 +42,7 @@ const getAllTotws = (request, response) => {
     })
 }
 
-const create = (request, response) => {
+const createTotw = (request, response) => {
   const formData = request.body
   let titus = formData.titus
   let subs = formData.subs
@@ -74,5 +74,5 @@ const create = (request, response) => {
 module.exports = {
   getCount,
   getAllTotws,
-  create
+  createTotw
 }

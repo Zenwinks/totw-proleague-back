@@ -1,7 +1,7 @@
 const pool = require('.././db')
 
 const getAllPlayers = (request, response) => {
-  pool.query('SELECT p.id, p.name, t.name as team, c.name as country FROM players p\n' +
+  pool.query('SELECT p.id, p.name, t.name as team, c.name as country, (select count(*) from totws where player_id = p.id) as nbtotws FROM players p\n' +
     'inner join teams t on p.team_id = t.id\n' +
     'inner join countries c on p.country_id = c.id\n' +
     'ORDER BY t.name ASC, p.name ASC;')
@@ -9,6 +9,52 @@ const getAllPlayers = (request, response) => {
     .catch(err => {
       console.error(err)
       response.status(500).json("Récupération des joueurs impossible")
+    })
+}
+
+const createPlayer = (request, response) => {
+  pool.query('INSERT INTO players(name, team_id, country_id) VALUES($1, $2, $3)', [
+    request.body.name,
+    request.body.team.id,
+    request.body.country.id,
+  ])
+    .then(res => {
+      pool.query('SELECT p.id, p.name, t.name as team, c.name as country, (select count(*) from totws where player_id = p.id) as nbtotws FROM players p\n' +
+        'inner join teams t on p.team_id = t.id\n' +
+        'inner join countries c on p.country_id = c.id\n' +
+        'ORDER BY t.name ASC, p.name ASC;')
+        .then(res2 => response.status(200).json(res2.rows))
+        .catch(err => {
+          console.error(err)
+          response.status(500).json("Récupération des joueurs impossible")
+        })
+    })
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Création du joueur impossible")
+    })
+}
+
+const updatePlayer = (request, response) => {
+  pool.query("UPDATE players SET name = $1, team_id = $2, country_id = $3 WHERE id = $4", [
+    request.body.name,
+    request.body.team.id,
+    request.body.country.id,
+    request.body.id
+  ])
+    .then(() => response.status(200).json("Joueur modifié avec succès."))
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Modification du joueur impossible")
+    })
+}
+
+const deletePlayer = (request, response) => {
+  pool.query("DELETE FROM players WHERE id = $1", [request.params.id])
+    .then(() => response.status(200).json("Joueur supprimé avec succès."))
+    .catch(err => {
+      console.error(err)
+      response.status(500).json("Suppression du joueur impossible")
     })
 }
 
@@ -90,32 +136,11 @@ const getAllPlayersWithPositions = (request, response) => {
     })
 }
 
-const create = (request, response) => {
-  const formData = request.body
-  let name = formData.name
-  let team = formData.team
-  let country = formData.country
-  pool.query('INSERT INTO players(name, team_id, country_id) VALUES($1, $2, $3)', [name, team.id, country.id])
-    .then(res => {
-      pool.query('SELECT p.id, p.name, t.name as team, c.name as country FROM players p\n' +
-        'inner join teams t on p.team_id = t.id\n' +
-        'inner join countries c on p.country_id = c.id\n' +
-        'ORDER BY t.name ASC, p.name ASC;')
-        .then(res2 => response.status(200).json(res2.rows))
-        .catch(err => {
-          console.error(err)
-          response.status(500).json("Récupération des joueurs impossible")
-        })
-    })
-    .catch(err => {
-      console.error(err)
-      response.status(500).json("Création du joueur impossible")
-    })
-}
-
 module.exports = {
   getAllPlayers,
-  create,
+  createPlayer,
+  updatePlayer,
+  deletePlayer,
   getAllPlayersWithPositions,
   getPlayersByTotw
 }
