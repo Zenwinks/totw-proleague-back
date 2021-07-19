@@ -15,7 +15,7 @@
     "express": "^4.17.1",
     "image-to-base64": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
-    "nodemon": "^2.0.9",
+    "nodemon": "^2.0.12",
     "pg": "^8.6.0"
   },
   "engines": {

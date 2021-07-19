@@ -55,6 +55,9 @@ app.delete('/countries/:id', middleware, countries.deleteCountry)
 
 //Appels Positions
 app.get('/positions', middleware, positions.getAllPositions)
+app.post('/positions', middleware, positions.createPosition)
+app.patch('/positions/:id', middleware, positions.updatePosition)
+app.delete('/positions/:id', middleware, positions.deletePosition)
 
 //Appels Authentification
 app.post('/login', auth.login)
