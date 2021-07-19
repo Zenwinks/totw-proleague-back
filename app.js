@@ -21,6 +21,7 @@ const totw = require('./routes/totw')
 const teams = require('./routes/teams')
 const countries = require('./routes/countries')
 const positions = require('./routes/positions')
+const users = require('./routes/users')
 
 app.use(allowCrossDomain)
 
@@ -54,6 +55,9 @@ app.get('/positions', middleware, positions.getAllPositions)
 app.post('/positions', middleware, positions.createPosition)
 app.patch('/positions/:id', middleware, positions.updatePosition)
 app.delete('/positions/:id', middleware, positions.deletePosition)
+
+//Appels Users
+app.get('/getTeamByUserName/:name', middleware, users.getTeamByUserName)
 
 //Appels Authentification
 app.post('/login', auth.login)
