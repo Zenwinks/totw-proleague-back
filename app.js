@@ -18,7 +18,6 @@ const allowCrossDomain = function (req, res, next) {
 const auth = require('./routes/auth')
 const players = require('./routes/players')
 const totw = require('./routes/totw')
-const formations = require('./routes/formations')
 const teams = require('./routes/teams')
 const countries = require('./routes/countries')
 const positions = require('./routes/positions')
@@ -37,9 +36,6 @@ app.get('/playersWithPositions', middleware, players.getAllPlayersWithPositions)
 app.get('/totw-count', middleware, totw.getCount)
 app.get('/totws', middleware, totw.getAllTotws)
 app.post('/add-totw', middleware, totw.createTotw)
-
-//Appels Formations
-app.get('/formations', middleware, formations.getAllFormations)
 
 //Appels Teams
 app.get('/teams', middleware, teams.getAllTeams)
