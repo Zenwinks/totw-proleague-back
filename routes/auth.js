@@ -39,7 +39,7 @@ const register = (request, response) => {
   var name = formData.name;
   var password = bcrypt.hashSync(formData.password, 8);
   var isAdmin = formData.isAdmin;
-  pool.query('INSERT INTO users(name, password, isAdmin) VALUES ($1, $2, $3);', [name, password, isAdmin])
+  pool.query('INSERT INTO users(name, password, isadmin) VALUES ($1, $2, $3);', [name, password, isAdmin])
     .then(res => response.status(200).json({success: 'Utilisateur créé'}))
     .catch(err => response.status(401).json({error: 'Impossible de créer le profil'}))
 }

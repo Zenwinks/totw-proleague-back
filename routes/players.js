@@ -13,7 +13,7 @@ const getAllPlayers = (request, response) => {
 }
 
 const createPlayer = (request, response) => {
-  pool.query('INSERT INTO players(name, team_id, country_id) VALUES($1, $2, $3)', [
+  pool.query('INSERT INTO players(id, name, team_id, country_id) VALUES(uuid_generate_v4(), $1, $2, $3)', [
     request.body.name,
     request.body.team.id,
     request.body.country.id,
@@ -59,7 +59,7 @@ const deletePlayer = (request, response) => {
 }
 
 const getPlayersByTotw = (request, response) => {
-  pool.query('SELECT p.id, p.name, t.name as team, c.name as country, tt."isTitu", tt."isPotw", po.label as position FROM players p\n' +
+  pool.query('SELECT p.id, p.name, t.name as team, c.name as country, tt.istitu, tt.ispotw, po.label as position FROM players p\n' +
     'inner join teams t on p.team_id = t.id\n' +
     'inner join countries c on p.country_id = c.id\n' +
     'inner join totws tt on p.id = tt.player_id\n' +
@@ -70,7 +70,7 @@ const getPlayersByTotw = (request, response) => {
       let titus = []
       let subs = []
       res.rows.forEach(player => {
-        if (player.isTitu) {
+        if (player.istitu) {
           titus.push(player)
         } else {
           subs.push(player)
@@ -88,12 +88,12 @@ const getAllPlayersWithPositions = (request, response) => {
   pool.query('select DISTINCT pl.id, pl.name, array_to_string(array_agg(po.label),\',\') as positions, te.name as team, c.name as country, coalesce((\n' +
     '\tSELECT COUNT(*) FROM totws t2 \n' +
     '\tINNER JOIN players pl2 on t2.player_id=pl2.id \n' +
-    '\tWHERE t2."isTitu" = true AND t2.player_id = pl.id\n' +
+    '\tWHERE t2.istitu = true AND t2.player_id = pl.id\n' +
     '\tGROUP BY t2.player_id, pl2.name order by pl2.name asc\n' +
     '),0) as nb_titu, coalesce((\n' +
     '\tSELECT COUNT(*) FROM totws t3 \n' +
     '\tINNER JOIN players pl3 on t3.player_id = pl3.id \n' +
-    '\tWHERE t3."isTitu" = false AND t3.player_id = pl.id\n' +
+    '\tWHERE t3.istitu = false AND t3.player_id = pl.id\n' +
     '\tGROUP BY t3.player_id, pl3.name order by pl3.name asc\n' +
     '),0) as nb_sub, (\n' +
     '\tSELECT COUNT(*) FROM totws t4 \n' +
@@ -103,7 +103,7 @@ const getAllPlayersWithPositions = (request, response) => {
     ') as nb_total, coalesce((\n' +
     '\tSELECT COUNT(*) FROM totws t5 \n' +
     '\tINNER JOIN players pl5 on t5.player_id = pl5.id \n' +
-    '\tWHERE t5."isPotw" = true AND t5.player_id = pl.id\n' +
+    '\tWHERE t5.ispotw = true AND t5.player_id = pl.id\n' +
     '\tGROUP BY t5.player_id, pl5.name order by pl5.name asc\n' +
     '),0) as nb_potw from players pl\n' +
     'inner join totws t on pl.id = t.player_id\n' +

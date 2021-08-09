@@ -49,7 +49,7 @@ const createTotw = (request, response) => {
   let totwCount = formData.totwCount
   try {
     titus.forEach(player => {
-      pool.query('insert into totws(player_id, position_id, "isTitu", "isPotw", totw) values($1, $2, true, $3, $4)', [
+      pool.query('insert into totws(id, player_id, position_id, istitu, ispotw, totw) values(uuid_generate_v4(), $1, $2, true, $3, $4)', [
         player.id,
         player.position.id,
         player.isPotw,
@@ -57,7 +57,7 @@ const createTotw = (request, response) => {
       ])
     })
     subs.forEach(player => {
-      pool.query('insert into totws(player_id, position_id, "isTitu", "isPotw", totw) values($1, $2, false, false, $3)', [
+      pool.query('insert into totws(id, player_id, position_id, istitu, ispotw, totw) values(uuid_generate_v4(), $1, $2, false, false, $3)', [
         player.id,
         player.position.id,
         totwCount

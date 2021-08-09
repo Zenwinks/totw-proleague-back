@@ -10,7 +10,7 @@ const getAllPositions = (request, response) => {
 }
 
 const createPosition = (request, response) => {
-  pool.query("INSERT INTO positions(label) VALUES($1)", [request.body.label])
+  pool.query("INSERT INTO positions(id, label) VALUES(uuid_generate_v4(), $1)", [request.body.label])
     .then(() => {
       pool.query('SELECT p.id, p.label, (select COUNT(DISTINCT t.player_id) from totws t where t.position_id = p.id) as nbplayers FROM positions p')
         .then(res => response.status(200).json(res.rows))

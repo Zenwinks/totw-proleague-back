@@ -10,7 +10,7 @@ const getAllTeams = (request, response) => {
 }
 
 const createTeam = (request, response) => {
-  pool.query("INSERT INTO teams(name) VALUES($1)", [request.body.name])
+  pool.query("INSERT INTO teams(id, name) VALUES(uuid_generate_v4(), $1)", [request.body.name])
     .then(() => {
       pool.query('SELECT t.id, t.name, (select count(*) from players where team_id = t.id) as nbplayers FROM public.teams t')
         .then(res => response.status(200).json(res.rows))

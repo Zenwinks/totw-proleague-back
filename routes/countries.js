@@ -10,7 +10,7 @@ const getAllCountries = (request, response) => {
 }
 
 const createCountry = (request, response) => {
-  pool.query("INSERT INTO countries(name) VALUES($1)", [request.body.name])
+  pool.query("INSERT INTO countries(id, name) VALUES(uuid_generate_v4(), $1)", [request.body.name])
     .then(() => {
       pool.query('SELECT c.id, c.name, (select count(*) from players where country_id = c.id) as nbplayers FROM countries c')
         .then(res => response.status(200).json(res.rows))
